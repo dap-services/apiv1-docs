@@ -1,0 +1,125 @@
+FORMAT: 1A
+HOST: http://www.google.com
+
+# DAP Services a.s. API, version 1
+
+API verze 1.
+
+## Allowed HTTPs requests:
+
+- `PUT` - Creates or updates a resource
+- `POST` - Updates a resource
+- `GET` - Retrieves a resource or list of resources
+- `DELETE` - Delete a resource
+
+## Typical Server Responses
+
+- 200 `OK` - The request was successful (some API calls may return 201 instead).
+- 201 `Created` - The request was successful and a resource was created.
+- 204 `No Content` - The request was successful but there is no representation to return (that is, the response is empty).
+- 400 `Bad Request` - The request could not be understood or was missing required parameters.
+- 401 `Unauthorized` - Authentication failed or user does not have permissions for the requested operation.
+- 403 `Forbidden` - Access denied.
+- 404 `Not Found` - Resource was not found.
+- 405 `Method Not Allowed` - Requested method is not supported for the specified resource.
+- 429 `Too Many Requests` - Exceeded API limits. Pause requests, wait one minute, and try again.
+- 503 `Service Unavailable` - The service is temporary unavailable. Try again later.
+
+> Čas ve všech položkách (pokud není řečeno jinak) je unix_time plus ms (http://www.epochconverter.com).
+
+# Group autentizace
+
+Pro autentizaci se používá http hlavička `Authorization` v každém požadavku. V této hlavičce se posílá autentizační token, vygenerovaný IT DAP Services. Hlavička vypadá takto:
+
+> Authorization: 2hPVXb4hP0MZfXm1u25_
+
+# Group WordModule
+
+Práce se slovním modulem.
+
+## Práce se slovním modulem [/wordmodule]
+
+### Vytvoření slovního modulu [PUT]
+
+Pro vytvoření slovního modulu je potřeba vstupní json s atributy: module_type (typ slovního modulu), name (název), wordList (seznam slov s jejich skupinama), lang_code(kod jazyka).
+
+**Popis atributů pro požadavek**
+
+- module_type_code - kód typu slovního modulu. Dodá DAP Services.
+- name - název slovního modulu
+- wordlist - seznam slov pro slovní modul
+    - word_groups - slovní skupiny pro označení slov.
+    - types - typ slova.
+- lang_code - musi byt podle spojeni specifikaci ISO 639-1 (http://www.loc.gov/standards/iso639-2/php/code_list.php) a ISO 3166-1 (http://www.iso.org/iso/country_codes/iso_3166_code_lists/country_names_and_code_elements.htm). Formát je: cs_CZ (lang_country)
+
+
+**Seznam typů slov:**
+
+| typ | Popis                            |
+|-----|----------------------------------|
+| 4   | slovo je osoba (jméno osoby)     |
+
+
+**Popis atributů pro výstup**
+
+- module_code - identifikátor vytvořeného slovního modulu
+- word_list - seznam slov včetně jejich identifikátorů.
+    - slova jsou předány jako dvojice id: slovo
+lang_code - lang_country kód vytvořeného slovního modulu.
+
+
++ Request (text/plain)
+
+    + Headers
+
+            Authorization: token
+            Accept: text/plain
+
+    + Body
+            {
+              "module_type_code": 1,
+              "name": "Název slovního modulu",
+              "word_list": [
+                {
+                  "Moje práce": {
+                    "word_groups": [1]
+                  }
+                },
+                {
+                  "Jan Novák": {
+                    "word_groups": [2],
+                    "types": [4]
+                  }
+                }
+              ],
+              "lang_code": "cs_CZ"
+            }
+
++ Response 200 (text/plain;charset=UTF-8)
+
+    + Headers
+
+    + Body
+
+            {
+              "module_code": 1,
+              "word_list": [
+                {
+                  "1": "Moje práce"
+                },
+                {
+                  "2": "Jan Novák"
+                }
+              ],
+              "lang_code": "cs_CZ"
+            }
+
++ Response 400 (Bad Request)
+
+    + Headers
+
+    + Body
+
+            {"code" : "kod chyby/hlaseni"}
+
++ Response 401 (Unauthorized)
