@@ -76,6 +76,7 @@ lang_code - lang_country kód vytvořeného slovního modulu.
             Accept: text/plain
 
     + Body
+
             {
               "module_type_code": 1,
               "name": "Název slovního modulu",
@@ -90,6 +91,9 @@ lang_code - lang_country kód vytvořeného slovního modulu.
                     "word_groups": [2],
                     "types": [4]
                   }
+                },
+                {
+                  "Pošta": {}
                 }
               ],
               "lang_code": "cs_CZ"
@@ -109,9 +113,185 @@ lang_code - lang_country kód vytvořeného slovního modulu.
                 },
                 {
                   "2": "Jan Novák"
+                },
+                {
+                  "3": "Pošta"
                 }
               ],
               "lang_code": "cs_CZ"
+            }
+
++ Response 400 (Bad Request)
+
+    + Headers
+
+    + Body
+
+            {"code" : "kod chyby/hlaseni"}
+
++ Response 401 (Unauthorized)
+
+# Group Snímání osob
+
+## Snímání [/scanner]
+
+### Vytvoření snímání [PUT]
+
+Pro vytvoření snímání je potřeba vstupní json obsahující atributy:
+
+- module_code (kód slovního modulu)
+- mask (maska používana pro snímání)
+
+**Popis atributů pro požadavek**
+
+- module_code - kod slovního modulu. Povinný parametr. Viz resource `/wordmodule [PUT]`
+- mask - položky, které bude vyplňovat klient před vstupem do snímače. Povinný parametr. V masce jsou povinné hodnoty:
+    - pohlaví
+    - věk
+
+**Seznam identifikátorů položek masky snímače:**
+
+| id | Popis                            |
+|-----|----------------------------------|
+|1 | Jméno|
+|2 | Příjmení|
+|3 | Datum narození|
+|4 | Vzdělání|
+|5 | Obec|
+|6 | Email|
+|7 | Důvod snímání|
+|8 | Pohlaví|
+|9 | Skupina|
+|10 | Věk|
+|11 | Pracovní pozice|
+|12 | Id snímané osoby|
+|13 | Id zodpovědné osoby|
+|14 | Společnost|
+|15 | language code|
+|16 | country code|
+
+
+**Seznam možných stavů položky masky:**
+
+| stav | Popis                            |
+|-----|----------------------------------|
+|E | položka je editovatelna, je to input text|
+|H | položka se nezobrazí v masce, hodnota je defaultní|
+|O | položka je volitelná tzn. není povinná|
+
+Tyto znaky lze libovolně kombinovat např: EO
+
+
+**Popis atributů pro výstup**
+
+- scanner_code - kód pro zadání do snímače.
+
+
++ Request (text/plain)
+
+    + Headers
+
+            Authorization: token
+            Accept: text/plain
+
+    + Body
+
+            {
+              "module_code": 1,
+              "mask": {
+                "3": {
+                  "name": "Rok narození",
+                  "values": [
+                    "1976",
+                    "1977",
+                    "1978",
+                    "1979"
+                  ]
+                },
+                "8": {
+                  "name": "Pohlaví",
+                  "values": [
+                    "Muž",
+                    "Žena"
+                  ]
+                }
+              }
+            }
+
++ Response 200 (text/plain;charset=UTF-8)
+
+    + Headers
+
+    + Body
+
+            {
+               "scanner_code": 111111
+            }
+
++ Response 400 (Bad Request)
+
+    + Headers
+
+    + Body
+
+            {"code" : "kod chyby/hlaseni"}
+
++ Response 401 (Unauthorized)
+
+# Group Vyhodnocování
+
+## Výpočty parametrů [/parameters/compute]
+
+Vyhodnocování parametrů nad jednotlivci, nebo skupinami osob.
+
+### [POST]
+
+**Popis atributů pro požadavek**
+
+- scan_data_ids - seznam id osob pro výpočet. Povinný parametr. V připadě, že je požadavek na výpočet hodnot pro skupinu osob, je třeba předat 4 a více id osob.
+- parameters - seznam id parametrů. Povinný parametr.
+- scale - zaoukrouhlovat výsledné hodnoty (true | false). Nepovinný parametr, defaultní hodnota je true.
+- scale_value - počet desetinných míst pro zaoukrouhlování. Nepovinnný parametr.
+
+**Seznam identifikátorů položek masky snímače:**
+
+**Popis atributů pro výstup**
+
+- výstupem je mapa id_parametru: vypočítaná hodnota. Může se jednat o čísla, řetězce, objekty.
+
++ Request (text/plain)
+
+    + Headers
+
+            Authorization: token
+            Accept: text/plain
+
+    + Body
+
+            {
+              "scan_data_ids": [1],
+              "parameters": [102],
+              "scan_object_ids": [10, 20],
+              "scale": true,
+              "scale_value": 2
+            }
+
++ Response 200 (text/plain;charset=UTF-8)
+
+    + Headers
+
+    + Body
+
+            {
+              "1": {
+                "value": 21
+              },
+              "10": {
+                "value": [
+                  "Já",
+                  "DAP Services a.s."
+                ]
+              }
             }
 
 + Response 400 (Bad Request)
