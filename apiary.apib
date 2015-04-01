@@ -138,7 +138,7 @@ lang_code - lang_country kód vytvořeného slovního modulu.
 Pro vytvoření snímání je potřeba vstupní json obsahující atributy:
 
 - module_code (kód slovního modulu)
-- mask (maska používana pro snímání)
+- mask (maska používana pro snímání). Položky masky mají povnné atributy name, state.
 
 **Popis atributů pro požadavek**
 
@@ -174,10 +174,11 @@ Pro vytvoření snímání je potřeba vstupní json obsahující atributy:
 | stav | Popis                            |
 |-----|----------------------------------|
 |E | položka je editovatelna, je to input text|
-|H | položka se nezobrazí v masce, hodnota je defaultní|
+|H | položka se nezobrazí v masce, zadaná hodnota (value) se dále přenáší ve snímání|
 |O | položka je volitelná tzn. není povinná|
+|K | povinná položka (např. Pohlaví a věk)|
 
-Tyto znaky lze libovolně kombinovat např: EO
+Tyto znaky lze libovolně kombinovat např: EO.
 
 
 **Popis atributů pro výstup**
@@ -204,14 +205,17 @@ Tyto znaky lze libovolně kombinovat např: EO
                     "1977",
                     "1978",
                     "1979"
-                  ]
+                  ],
+                  "state": "E"
+
                 },
                 "8": {
                   "name": "Pohlaví",
                   "values": [
                     "Muž",
                     "Žena"
-                  ]
+                  ],
+                  "state": "E"
                 }
               }
             }
