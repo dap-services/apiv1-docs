@@ -138,7 +138,7 @@ lang_code - lang_country kód vytvořeného slovního modulu.
 Pro vytvoření snímání je potřeba vstupní json obsahující atributy:
 
 - module_code (kód slovního modulu)
-- mask (maska používana pro snímání). Položky masky mají povnné atributy name, state.
+- mask (maska používana pro snímání).
 
 **Popis atributů pro požadavek**
 
@@ -146,6 +146,8 @@ Pro vytvoření snímání je potřeba vstupní json obsahující atributy:
 - mask - položky, které bude vyplňovat klient před vstupem do snímače. Povinný parametr. V masce jsou povinné hodnoty:
     - pohlaví
     - věk
+    
+Položky masky mají povinnné atributy **name**, **state**. V případě DAPs snímače nejsou možné některé kombinace, např. v případě zadání roku narození jako kolekce hodnot (values) není možný stav E (editovatelný).
 
 **Seznam identifikátorů položek masky snímače:**
 
